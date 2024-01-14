@@ -27,6 +27,7 @@ run_robustness <- function(seed_range = c(1:2), taxa_rds, nclusters, parAlgorith
         put(taxa)
         subdir_path = paste(robustnessdirname, "/", subset, "/", transformation, "/", level, "/", taxa, "/",  sep="")
         check_dirs(subdir_path)
+        kml_seeds[[taxa]] = list()
         kml_seeds[[taxa]][["subdir_path"]] = subdir_path
     
         for (seed_val in seed_range) {

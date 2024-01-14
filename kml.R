@@ -150,7 +150,7 @@ put("robustness finished")
 
 sep("running deconvolution")
 
-kmlSeedsDeconvoluted = deconvolute_robustness(kmlSeeds=kmlSeeds, 
+kmlSeedsDeconvoluted = deconvolute_robustness(kml_seeds=kmlSeeds, 
                                               subset=subset_arg, 
                                               transformation=transformation_arg,
 					      level=level_arg)

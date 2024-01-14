@@ -63,7 +63,11 @@ robustness_statistics <- function(kml_deconvoluted, metadata) {
     taxa_list = names(kml_deconvoluted)
     
     robustness_statistics = list()
-    
+    robustness_statistics[["taxaSeedStats"]] = list()
+    robustness_statistics[["taxaSeedsMax"]] = list()
+    robustness_statistics[["taxaSeedsMin"]] = list()
+    robustness_statistics[["taxaSeedsSummarised"]] = list()    
+
     for (taxa in taxa_list) {
         
 	put(taxa)

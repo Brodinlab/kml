@@ -3,3 +3,16 @@ env/*
 
 # except env file
 !env/kml.env
+
+# ignore all output
+output/*
+
+# ignore all input
+input/*
+
+# ignore all logs
+log/*
+
+# ignore random files created during execution
+trash
+dfCLD*
