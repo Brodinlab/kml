@@ -8,9 +8,9 @@ check_dirs <- function(subdir_path) {
     
         if (!dir.exists(subdir_path)) {
         dir.create(subdir_path, recursive = TRUE)
-        message(paste("Directory", subdir_path, "created."))
+        put(paste("Directory", subdir_path, "created."))
     } else {
-        message(paste("Directory", subdir_path, "already exists."))
+        put(paste("Directory", subdir_path, "already exists."))
     }
 }
 
@@ -24,13 +24,12 @@ run_robustness <- function(seed_range = c(1:2), taxa_rds, nclusters, parAlgorith
     kml_seeds <- list()
 
     for (taxa in taxa_list) {
-        print(taxa)
+        put(taxa)
         subdir_path = paste(robustnessdirname, "/", subset, "/", transformation, "/", level, "/", taxa, "/",  sep="")
         check_dirs(subdir_path)
         kml_seeds[[taxa]][["subdir_path"]] = subdir_path
     
         for (seed_val in seed_range) {
-            print(seed_val)
             set.seed(seed_val)
         
             if (subsetting == TRUE) {
@@ -52,10 +51,6 @@ run_robustness <- function(seed_range = c(1:2), taxa_rds, nclusters, parAlgorith
             
         }
     }
-    
-    rds_path = paste(robustnessdirname, "/", subset, "/", transformation, "/", level, "/kml_seeds.rds", sep = "")
-    
-    saveRDS(kml_seeds, rds_path)
     
     return(kml_seeds)
 }

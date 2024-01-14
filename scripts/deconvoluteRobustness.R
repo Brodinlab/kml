@@ -4,18 +4,17 @@
 # Setting ROBUSTNESS DECONVOLUTION (REASSIGNING TRAJECTORY NAMES) FUNCTIONS #
 #############################################################################
 
-deconvolute_robustness <- function(kml_seeds, subset, transformation) {
+deconvolute_robustness <- function(kml_seeds, subset, transformation, level) {
     
     taxa_list = names(kml_seeds)
     kml_deconvoluted <- list()
     
     for (taxa in taxa_list) {
         
-        print(taxa)
+        put(taxa)
         cluster_column = paste(taxa, "_clusters", sep = "")
         
-#        meanTraj_allSeeds <- do.call(rbind, lapply(robustness_genus[[taxa]], function(x) {x[["taxaMeanTraj"]]})) # rbind all meanTrajectories
-        meanTraj_allSeeds <- do.call(rbind, lapply(robustness_genus[[taxa]], function(x) {
+        meanTraj_allSeeds <- do.call(rbind, lapply(kml_seeds[[taxa]], function(x) {
             if ("taxaMeanTraj" %in% names(x)) {
                 return(x[["taxaMeanTraj"]])
             } else {invisible()}}))
@@ -23,9 +22,7 @@ deconvolute_robustness <- function(kml_seeds, subset, transformation) {
         
         meanTraj_allSeeds$trajSeedIdentifier = paste(meanTraj_allSeeds[[cluster_column]], meanTraj_allSeeds$seed, sep = "_") # preserve original trajectory and seed label
         
-#        subjectAssignments_allSeeds <- do.call(rbind, lapply(robustness_genus[[taxa]], function(x) {x[["subjectAssignment"]]})) # rbind all subjectAssignments
-        
-        subjectAssignments_allSeeds <- do.call(rbind, lapply(robustness_genus[[taxa]], function(x) {
+        subjectAssignments_allSeeds <- do.call(rbind, lapply(kml_seeds[[taxa]], function(x) {
             if ("subjectAssignment" %in% names(x)) {
                 return(x[["subjectAssignment"]])
             } else {invisible()}}))
@@ -49,7 +46,6 @@ deconvolute_robustness <- function(kml_seeds, subset, transformation) {
 
         ### for plotting the meanTrajs
         
-        
         kml_deconvolution_table = merge(meanTraj_allSeeds_wide_kml$subjectAssignment, meanTraj_allSeeds_wide, by = "trajSeedIdentifier")
         kml_deconvolution_table_melted = reshape2::melt(kml_deconvolution_table, id.vars = c("trajSeedIdentifier", cluster_column))
         kml_deconvolution_table_melted$variable_numeric <- as.numeric(gsub("t", "", kml_deconvolution_table_melted$variable))
@@ -59,6 +55,9 @@ deconvolute_robustness <- function(kml_seeds, subset, transformation) {
         kml_deconvoluted[[taxa]][["wideMeanTraj"]] = meanTraj_allSeeds_wide
         kml_deconvoluted[[taxa]][["kmlDictionary"]] = meanTraj_allSeeds_wide_kml
         kml_deconvoluted[[taxa]][["subjectAssignmentsDeconvoluted"]] = subjectAssignments_deconvoluted
+
+	taxa_deconvoluted_rds = kml_seeds[[taxa]][["subdir_path"]], taxa, "_deconvoluted.rds", sep="")
+	saveRDS(taxa_deconvoluted_rds, kml_deconvoluted[[taxa]])
 
     }
     

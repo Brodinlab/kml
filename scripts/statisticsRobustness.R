@@ -15,8 +15,6 @@ tile_seed_stats <- function(subjectAssignmentsDeconvoluted, taxa) {
     
     for (seed_val in seeds) {
         
-        print(seed_val)
-        
         seedDeconvoluted = subjectAssignmentsDeconvoluted %>% 
             subset(seed == seed_val & reactivity != "_nodata") %>% 
             group_by(.data[[cluster_column]], reactivity) %>% summarise(count = n()) %>% 
@@ -68,8 +66,10 @@ robustness_statistics <- function(kml_deconvoluted, metadata) {
     
     for (taxa in taxa_list) {
         
+	put(taxa)
         taxa_deconvoluted = merge(kml_deconvoluted[[taxa]][["subjectAssignmentsDeconvoluted"]], metadata, by = "subject")
         robustness_statistics[["taxaSeedStats"]][[taxa]] = do.call(rbind, tile_seed_stats(taxa_deconvoluted, taxa))
+	put("tiling completed, now summarising")
         
         # for each trajectory, returns a dataframe with mean OR across all seeds
         avg = robustness_statistics[["taxaSeedStats"]][[taxa]] %>% 

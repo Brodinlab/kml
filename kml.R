@@ -127,6 +127,9 @@ input_rds = readRDS(input_arg)
 metadata = read.csv(metadata_arg, row.names = "X")
 rownames(metadata) = metadata[["subject"]]
 
+robustness_path = paste("output", "/", subset_arg, "/", transformation_arg, "/", level_arg, "/", sep = "")
+check_dirs(robustness_path)
+
 kmlSeeds = run_robustness(seed_range = c(1:5), 
                           taxa_rds=input_rds,
                           nclusters=ncluster_arg,
@@ -135,6 +138,9 @@ kmlSeeds = run_robustness(seed_range = c(1:5),
                           subset=subset_arg,
                           transformation=transformation_arg,
                           level=level_arg)
+
+kmlSeeds_path = paste(robustness_path, "kmlSeeds.rds", sep = "")
+saveRDS(kmlSeeds, kmlSeeds_path)
 
 put("robustness finished")
 
@@ -146,7 +152,11 @@ sep("running deconvolution")
 
 kmlSeedsDeconvoluted = deconvolute_robustness(kmlSeeds=kmlSeeds, 
                                               subset=subset_arg, 
-                                              transformation=transformation_arg)
+                                              transformation=transformation_arg,
+					      level=level_arg)
+
+kmlSeedsDeconvoluted_path = paste(robustness_path, "kmlSeedsDeconvoluted.rds", sep = "")
+saveRDS(kmlSeedsDeconvoluted, kmlSeedsDeconvoluted_path)
 
 put("deconvolution finished")
 
@@ -156,9 +166,33 @@ put("deconvolution finished")
 
 sep("summarising robustness")
 
-seedStatistics = robustness_statistics(kml_deconvoluted=kmlSeedsDeconvoluted, 
+kmlSeedStatistics = robustness_statistics(kml_deconvoluted=kmlSeedsDeconvoluted, 
                                        metadata=metadata)
 
+kmlSeedStatistics_path = paste(robustness_path, "kmlSeedStatistics.rds", sep = "")
+saveRDS(kmlSeedStatistics, kmlSeedStatistics_path)
+
 put("summarising finished")
+
+#######################
+# PLOTTING ROBUSTNESS #
+#######################
+
+sep("plotting robustness and aggregating final data")
+
+put("generating data")
+taxaSeedsSummarised = plot_taxaSeedsSummarised(kmlSeedStatistics, plot = FALSE)
+put("generating volcano plot")
+taxaSeedsSummarisedVolcano = plot_taxaSeedsSummarised(kmlSeedsStatistics, plot = TRUE)
+
+taxaSeedsSummarisedData_path = paste(robustness_path, "taxaSeedsSummarised.csv", sep="")
+taxaSeedsSummarisedPlot_path = paste(robustness_path, "taxaSeedsSummarised.pdf", sep="")
+
+put("saving data")
+write.csv(taxaSeedsSummarised, taxaSeedsSummarisedData_path)
+put("saving volcano")
+ggsave(taxaSeedsSummarisedPlot_path, taxaSeedsSummarisedVolcano)
+
+sep("RUN FINISHED CONGRATULATIONS")
 
 log_close()
