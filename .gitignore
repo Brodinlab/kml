@@ -1,0 +1,5 @@
+# ignore all env directories that are created upon library installation
+env/*
+
+# except env file
+!env/kml.env
