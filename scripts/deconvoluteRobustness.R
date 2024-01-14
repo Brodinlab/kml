@@ -38,7 +38,7 @@ deconvolute_robustness <- function(kml_seeds, subset, transformation, level) {
             pivot_wider(names_from = variable, values_from = value)
         
         nClusters = length(unique(meanTraj_allSeeds[[cluster_column]])) # number of clusters        
-        meanTraj_allSeeds_wide_kml = run_kml(meanTraj_allSeeds_wide, nClusters, 1, parWithEuclidean_rnd, taxa, subset, transformation) # deconvolution kml (dictionary)
+        meanTraj_allSeeds_wide_kml = run_kml(meanTraj_allSeeds_wide, nClusters, 1, kml_parameters[["parWithEuclidean_rndm"]], taxa, subset, transformation) # deconvolution kml (dictionary)
         
         ### relabeling individuals 
         subjectAssignments_allSeeds = subjectAssignments_allSeeds %>% select(subject, trajSeedIdentifier)
@@ -58,7 +58,7 @@ deconvolute_robustness <- function(kml_seeds, subset, transformation, level) {
         kml_deconvoluted[[taxa]][["subjectAssignmentsDeconvoluted"]] = subjectAssignments_deconvoluted
 
 	taxa_deconvoluted_rds_path = paste(kml_seeds[[taxa]][["subdir_path"]], taxa, "_deconvoluted.rds", sep="")
-	saveRDS(taxa_deconvoluted_rds_path, kml_deconvoluted[[taxa]])
+	saveRDS(kml_deconvoluted[[taxa]], taxa_deconvoluted_rds_path)
 
     }
     
