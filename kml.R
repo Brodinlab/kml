@@ -183,7 +183,7 @@ sep("plotting robustness and aggregating final data")
 put("generating data")
 taxaSeedsSummarised = plot_taxaSeedsSummarised(kmlSeedStatistics, plot = FALSE)
 put("generating volcano plot")
-taxaSeedsSummarisedVolcano = plot_taxaSeedsSummarised(kmlSeedsStatistics, plot = TRUE)
+taxaSeedsSummarisedVolcano = plot_taxaSeedsSummarised(kmlSeedStatistics, plot = TRUE)
 
 taxaSeedsSummarisedData_path = paste(robustness_path, "taxaSeedsSummarised.csv", sep="")
 taxaSeedsSummarisedPlot_path = paste(robustness_path, "taxaSeedsSummarised.pdf", sep="")
