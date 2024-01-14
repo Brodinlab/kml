@@ -8,8 +8,12 @@ options(repos = c(CRAN = "https://cran.r-project.org/"),
 	rgl.useNULL = TRUE
 	)
 
+######################
+# SET UP ENVIRONMENT # 
+######################
 
-# Function to check and install packages
+# will install packages in env/
+
 check_and_install_packages <- function(package_names) {
   installed_packages <- rownames(installed.packages())
   
@@ -23,11 +27,9 @@ check_and_install_packages <- function(package_names) {
   }
 }
 
-# Read the package names from the environment file
 env_file_path <- "env/kml.env"
 package_names <- readLines(env_file_path)
 
-# Check and install packages
 check_and_install_packages(package_names)
 
 # Load the packages
@@ -48,7 +50,6 @@ options("logr.compact" = TRUE)
 
 sep("parsing cli args")
 
-# Add the --input argument to the parser
 parser <- ArgumentParser(description = "Command Line Argument Parsing in R") # parser
 parser$add_argument("--input", type = "character", required = TRUE, 
                     help = "Input .rds with count matrices per taxa")
