@@ -130,7 +130,7 @@ rownames(metadata) = metadata[["subject"]]
 robustness_path = paste("output", "/", subset_arg, "/", transformation_arg, "/", level_arg, "/", sep = "")
 check_dirs(robustness_path)
 
-kmlSeeds = run_robustness(seed_range = c(1:5), 
+kmlSeeds = run_robustness(seed_range = c(1:100), 
                           taxa_rds=input_rds,
                           nclusters=ncluster_arg,
                           parAlgorithm=kml_parameters[[algorithm_arg]],
