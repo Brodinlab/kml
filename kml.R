@@ -196,7 +196,9 @@ put("saving volcano")
 ggsave(taxaSeedsSummarisedPlot_path, taxaSeedsSummarisedVolcano, height = 15, width = 20)
 
 for (taxa in names(kmlSeeds)) {
-    
+
+    put(paste("plotting deconvoluted trajectories: ", taxa, sep=""))
+
     a = plotDeconvolutedMeanTraj(kmlSeedsDeconvoluted[[taxa]][["meltedMeanTraj"]], kmlSeedStatistics[["taxaSeedStats"]][[taxa]], taxa)
     
     trajectory_plot_paths = paste(plot_paths, taxa, ".pdf", sep="")
