@@ -191,7 +191,7 @@ taxaSeedsSummarisedPlot_path = paste(robustness_path, "taxaSeedsSummarised.pdf",
 put("saving data")
 write.csv(taxaSeedsSummarised, taxaSeedsSummarisedData_path)
 put("saving volcano")
-ggsave(taxaSeedsSummarisedPlot_path, taxaSeedsSummarisedVolcano)
+ggsave(taxaSeedsSummarisedPlot_path, taxaSeedsSummarisedVolcano, height = 15, width = 20)
 
 sep("RUN FINISHED CONGRATULATIONS")
 
