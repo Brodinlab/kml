@@ -46,8 +46,6 @@ plotDeconvolutedMeanTraj <- function(kml_deconvoluted_taxa_melted, kmlSeedStatis
     
     cluster_column = paste(taxa, "clusters", sep="_")
     
-#    print(cluster_column)
-    
     meanTraj = kml_deconvoluted_taxa_melted
     meanTraj[["seed"]] = paste("seed:", gsub("*._", "", meanTraj[["trajSeedIdentifier"]]))
     
@@ -56,13 +54,11 @@ plotDeconvolutedMeanTraj <- function(kml_deconvoluted_taxa_melted, kmlSeedStatis
         select(trajectory, seed, fraction_reactive, fisher_OR, fisher_pval) %>%
         dplyr::rename(!!cluster_column := "trajectory")
     
-    print(colnames(meanTraj))
-    print(colnames(seed_metadata))
-    
     kmlMeanTraj_metadata = merge(meanTraj, seed_metadata, by = c(cluster_column, "seed"))
     
-    print(dim(meanTraj))
-    print(dim(kmlMeanTraj_metadata))
+    if (dim(meanTraj)[1] != dim(kmlMeanTraj_metadata)[1]) {
+        put(paste(taxa, ": DIMENSIONS DONT ADD UPP AFTER MERGING"))
+    }
     
     kml_plot_theme = theme_minimal() + 
         theme(
