@@ -12,7 +12,12 @@ plot_taxaSeedsSummarised <- function(seed_stats, plot = TRUE) {
     if (plot == TRUE) {
         
         a = ggplot() +
-        geom_point(data=taxaSeedsSummarised, aes(x=OR_mean, y=-log10(p.val), fill = ifelse(OR_mean > 1, "higher risk of atopy", "lower risk of atopy")), size=8, shape = 21, alpha=0.8) +
+        geom_point(data=taxaSeedsSummarised, aes(x=OR_mean, 
+						 y=-log10(p.val), 
+						 fill = ifelse(OR_mean > 1, "higher risk of atopy", "lower risk of atopy"),
+						 size=(.data[["_NR"]] + .data[["_R"]])),
+					shape = 21, alpha=0.8) +
+
         geom_hline(yintercept = 1.3, linetype = 5, lwd = 1.1, alpha=0.7) + 
 
         geom_text_repel(data = taxaSeedsSummarised, 
