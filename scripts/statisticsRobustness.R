@@ -79,7 +79,7 @@ robustness_statistics <- function(kml_deconvoluted, metadata) {
         avg = robustness_statistics[["taxaSeedStats"]][[taxa]] %>% 
                         subset(trajectory != 'X') %>% 
                         group_by(trajectory) %>% 
-                        summarise(OR_mean = mean(fisher_OR))
+                        summarise(OR_mean = mean(fisher_OR), mean_NR = mean(.data[["_NR"]]), mean_R = mean(.data[["_R"]]))
         
         # for each seed, returns a dataframe with the trajectory that had the highest OR
         robustness_statistics[["taxaSeedsMax"]][[taxa]] = robustness_statistics[["taxaSeedStats"]][[taxa]] %>% 
