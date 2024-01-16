@@ -128,7 +128,9 @@ metadata = read.csv(metadata_arg, row.names = "X")
 rownames(metadata) = metadata[["subject"]]
 
 robustness_path = paste("output", "/", subset_arg, "/", transformation_arg, "/", level_arg, "/", sep = "")
+plot_path = paste("output", "/", subset_arg, "/", transformation_arg, "/", level_arg, "/plots", sep = "")
 check_dirs(robustness_path)
+check_dirs(plot_path)
 
 kmlSeeds = run_robustness(seed_range = c(1:100), 
                           taxa_rds=input_rds,
@@ -192,6 +194,14 @@ put("saving data")
 write.csv(taxaSeedsSummarised, taxaSeedsSummarisedData_path)
 put("saving volcano")
 ggsave(taxaSeedsSummarisedPlot_path, taxaSeedsSummarisedVolcano, height = 15, width = 20)
+
+for (taxa in names(kmlSeeds)) {
+    
+    a = plotDeconvolutedMeanTraj(kmlSeedsDeconvoluted[[taxa]][["meltedMeanTraj"]], kmlSeedStatistics[["taxaSeedStats"]][[taxa]], taxa)
+    
+    trajectory_plot_paths = paste(plot_paths, taxa, ".pdf", sep="")
+    ggsave(trajectory_plot_paths, a, height = 7, width = 24)
+}
 
 sep("RUN FINISHED CONGRATULATIONS")
 
