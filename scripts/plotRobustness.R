@@ -42,15 +42,61 @@ plot_taxaSeedsSummarised <- function(seed_stats, plot = TRUE) {
     
 }
 
-plotDeconvolutedMeanTraj <- function(kml_deconvoluted_table_melted, cluster_column) { 
-
+plotDeconvolutedMeanTraj <- function(kml_deconvoluted_taxa_melted, kmlSeedStatistics_taxa, taxa) { 
+    
+    cluster_column = paste(taxa, "clusters", sep="_")
+    
+#    print(cluster_column)
+    
+    meanTraj = kml_deconvoluted_taxa_melted
+    meanTraj[["seed"]] = paste("seed:", gsub("*._", "", meanTraj[["trajSeedIdentifier"]]))
+    
+    seed_metadata = kmlSeedStatistics_taxa %>% 
+        subset(trajectory != 'X') %>% 
+        select(trajectory, seed, fraction_reactive, fisher_OR, fisher_pval) %>%
+        dplyr::rename(!!cluster_column := "trajectory")
+    
+    print(colnames(meanTraj))
+    print(colnames(seed_metadata))
+    
+    kmlMeanTraj_metadata = merge(meanTraj, seed_metadata, by = c(cluster_column, "seed"))
+    
+    print(dim(meanTraj))
+    print(dim(kmlMeanTraj_metadata))
+    
+    kml_plot_theme = theme_minimal() + 
+        theme(
+            panel.border = element_rect(color = "black", fill = NA),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            axis.line = element_line(colour = "black"), 
+            axis.text.x = element_text(size = 14, face = "bold"), 
+            axis.text.y = element_text(size = 14, face = "bold"), legend.position = "top")
+    
+    microshades_settings = scale_color_gradient2(
+          name="Fraction Reactive",
+          low = microshades_palettes$micro_green[4], 
+          mid = "white", # This color is at the midpoint, which is 1.5 in this case.
+          high = microshades_palettes$micro_orange[4], 
+          midpoint = 1.5, limits = c(0.5, 2.5), na.value = microshades_palettes$micro_orange[4],
+          space = "Lab",
+          guide = "colourbar"
+        )
+        
     a <- ggplot() + # the original labeling
-        geom_line(data = kml_deconvoluted_table_melted, aes(x = .data[["variable_numeric"]], y = .data[["value"]], col = .data[["original_label"]], group = .data[["trajSeedIdentifier"]]))
+        geom_line(data = kmlMeanTraj_metadata, aes(x = .data[["variable_numeric"]], y = .data[["value"]], col = .data[["original_label"]], group = .data[["trajSeedIdentifier"]])) +
+        kml_plot_theme + xlab("timepoint") + ylab("abundance (clr or relab)")
     
     b <- ggplot() + # deconvoluted labeling
-        geom_line(data = kml_deconvoluted_table_melted, aes(x = .data[["variable_numeric"]], y = .data[["value"]], col = .data[[cluster_column]], group = .data[["trajSeedIdentifier"]]))
+        geom_line(data = kmlMeanTraj_metadata, aes(x = .data[["variable_numeric"]], y = .data[["value"]], col = .data[[cluster_column]], group = .data[["trajSeedIdentifier"]])) +
+        kml_plot_theme + xlab("timepoint") + ylab("abundance (clr or relab)")
     
-    return(arrangeGrob(a,b, ncol = 2))
+    c <- ggplot() + # deconvoluted labeling
+        geom_line(data = kmlMeanTraj_metadata, aes(x = .data[["variable_numeric"]], y = .data[["value"]], col = .data[["fraction_reactive"]], group = .data[["trajSeedIdentifier"]])) +
+        kml_plot_theme + xlab("timepoint") + ylab("abundance (clr or relab)") + 
+        microshades_settings
+    
+    
+    
+    return(arrangeGrob(a,b,c, ncol = 3))
 }
-
-
