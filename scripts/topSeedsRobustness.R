@@ -22,7 +22,10 @@ robustness_top_seeds <- function(kmlSeedStatistics) {
         for (traj in max_trajectories) {
             
             taxaTrajTopSeeds[[taxa]][[traj]] = list()
-            taxaSeedStatistics = kmlSeedStatistics[["taxaSeedStats"]][[taxa]] %>% subset(trajectory == traj) %>% arrange(desc(fisher_OR)) %>% head(20) # grab 20 best seeds
+            taxaSeedStatistics = kmlSeedStatistics[["taxaSeedStats"]][[taxa]] %>% 
+                subset(trajectory == traj & fisher_OR > 1) %>% # only keep seeds where OR > 1 because hypothesis is max
+                arrange(fisher_pval) %>% # arranges by pvalues (increasing)
+                head(20) # grab 20 best seeds
             taxaTrajTopSeeds[[taxa]][[traj]] = taxaSeedStatistics[, c("trajectory", "seed", "fisher_OR", "fisher_pval")]
             
         }
@@ -30,7 +33,11 @@ robustness_top_seeds <- function(kmlSeedStatistics) {
         for (traj in min_trajectories) {
             
             taxaTrajTopSeeds[[taxa]][[traj]] = list()
-            taxaSeedStatistics = kmlSeedStatistics[["taxaSeedStats"]][[taxa]] %>% subset(trajectory == traj) %>% arrange(fisher_OR) %>% head(20) # grab 20 best seeds
+            taxaSeedStatistics = kmlSeedStatistics[["taxaSeedStats"]][[taxa]] %>% 
+                subset(trajectory == traj & fisher_OR < 1) %>% # only keep seeds where OR < 1 because hypothesis is min
+                arrange(fisher_pval) %>% 
+                head(20) # grab 20 best seeds
+            
             taxaTrajTopSeeds[[taxa]][[traj]] = taxaSeedStatistics[, c("trajectory", "seed", "fisher_OR", "fisher_pval")]
             
         }
@@ -69,30 +76,33 @@ summarise_top_seeds <- function(kmlSeedStatistics, kmlSeedsDeconvoluted, metadat
             subjectAssignments[["seed"]] = paste("seed:", gsub("*._", "", subjectAssignments[["trajSeedIdentifier"]]))
             
             subjectAssignmentsTopSeeds = subjectAssignments %>% subset(seed %in% topSeeds)
-            subjectAssignmentsTopSeedsRobustness = subjectAssignmentsTopSeeds %>% group_by(subject, .data[[cluster_column]]) %>% summarise(count = n()) %>% mutate(prop = count / sum(count)) %>% subset(prop > threshold)
+            subjectAssignmentsTopSeeds[[cluster_column]] <- ifelse(subjectAssignmentsTopSeeds[[cluster_column]] == traj, traj, "X")
+            subjectAssignmentsTopSeedsRobustness = subjectAssignmentsTopSeeds %>% 
+                group_by(subject, .data[[cluster_column]]) %>% 
+                summarise(count = n()) %>% 
+                mutate(prop = count / sum(count)) %>% 
+                subset(prop > threshold)
             
             topSeedsSummarised[["topSubjectAssginments"]][[taxa]][[traj]] = merge(subjectAssignmentsTopSeedsRobustness, metadata, by = "subject")
-            
-#            return(topSeedsSummarised)
             
             ### TILING TOP SEEDS
             
             topSeedsStatistics = topSeedsSummarised[["topSubjectAssginments"]][[taxa]][[traj]] %>% 
                 subset(reactivity != "_nodata") %>% 
-                group_by(.data[[cluster_column]], reactivity) %>% summarise(count = n()) %>% 
-                pivot_wider(names_from = reactivity, values_from = count) %>% data.frame(check.names = FALSE)
+                group_by(.data[[cluster_column]], reactivity) %>% 
+                summarise(count = n()) %>% 
+                pivot_wider(names_from = reactivity, values_from = count, values_fill = 0) %>% 
+                data.frame(check.names = FALSE) %>%
+                arrange(desc(.data[[cluster_column]]))
             
-            topSeedsStatistics[[cluster_column]] <- ifelse(topSeedsStatistics[[cluster_column]] == traj, traj, "X")
-            
-            topSeedsStatistics = topSeedsStatistics %>% # summarises all other trajectories to X
-                group_by(.data[[cluster_column]]) %>% 
-                summarise(across(everything(), sum, na.rm = TRUE)) %>% 
-                arrange(desc(.data[[cluster_column]])) %>%
-                data.frame(check.names = FALSE)
             
             topSeedsStatistics = topSeedsStatistics[, c(cluster_column, "_NR", "_R")]
             rownames(topSeedsStatistics) = topSeedsStatistics[[cluster_column]]
             topSeedsStatistics[[cluster_column]] <- NULL
+            
+            put(taxa)
+            put(topSeedsStatistics)
+            
             
             fisher_test = fisher.test(topSeedsStatistics)
             
@@ -101,11 +111,10 @@ summarise_top_seeds <- function(kmlSeedStatistics, kmlSeedsDeconvoluted, metadat
             topSeedsStatistics[["comparison"]] = paste(traj, "v", "X", sep = "")
             topSeedsStatistics[["fisher_pval"]] = fisher_test$p.value
             topSeedsStatistics[["fisher_OR"]] = fisher_test$estimate
-            topSeedsStatistics[["fraction_reactive"]] = topSeedsStatistics$`_R` / topSeedsStatistics$`_NR`
+            topSeedsStatistics[["ratio_reactive"]] = topSeedsStatistics$`_R` / topSeedsStatistics$`_NR`
             
             topSeedsSummarised[["topSeedsSummarised"]][[taxa]][[traj]] = topSeedsStatistics
 
-            
         }
     }
     
