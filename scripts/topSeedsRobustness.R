@@ -47,8 +47,10 @@ robustness_top_seeds <- function(kmlSeedStatistics) {
     return(taxaTrajTopSeeds)
 }
 
-summarise_top_seeds <- function(kmlSeedStatistics, kmlSeedsDeconvoluted, metadata, threshold) {
+summarise_top_seeds <- function(kmlSeedStatistics, kmlSeedsDeconvoluted, metadata, threshold=0.6) {
     # give threshold like a fraction e.g. .75%. needs to be > 0.5 at least.
+    # higher threshold does not necessarily produce better results because individuals who are split between two very similar trajectories are filtered away completely
+    # In some comparisons it doesn't matter to which of these they belong to e.g. bacteroidia in relab data. 
     
     topSeedsSummarised = list()
     topSeedsSummarised[["topSubjectAssginments"]] = list()
@@ -81,7 +83,7 @@ summarise_top_seeds <- function(kmlSeedStatistics, kmlSeedsDeconvoluted, metadat
                 group_by(subject, .data[[cluster_column]]) %>% 
                 summarise(count = n()) %>% 
                 mutate(prop = count / sum(count)) %>% 
-                subset(prop > threshold)
+                subset(prop >= threshold)
             
             topSeedsSummarised[["topSubjectAssginments"]][[taxa]][[traj]] = merge(subjectAssignmentsTopSeedsRobustness, metadata, by = "subject")
             
@@ -100,10 +102,6 @@ summarise_top_seeds <- function(kmlSeedStatistics, kmlSeedsDeconvoluted, metadat
             rownames(topSeedsStatistics) = topSeedsStatistics[[cluster_column]]
             topSeedsStatistics[[cluster_column]] <- NULL
             
-            put(taxa)
-            put(topSeedsStatistics)
-            
-            
             fisher_test = fisher.test(topSeedsStatistics)
             
             topSeedsStatistics[["trajectory"]] = rownames(topSeedsStatistics)
@@ -111,7 +109,8 @@ summarise_top_seeds <- function(kmlSeedStatistics, kmlSeedsDeconvoluted, metadat
             topSeedsStatistics[["comparison"]] = paste(traj, "v", "X", sep = "")
             topSeedsStatistics[["fisher_pval"]] = fisher_test$p.value
             topSeedsStatistics[["fisher_OR"]] = fisher_test$estimate
-            topSeedsStatistics[["ratio_reactive"]] = topSeedsStatistics$`_R` / topSeedsStatistics$`_NR`
+            topSeedsStatistics[["fisher_OR_reciprocal"]] = 1/fisher_test$estimate
+            topSeedsStatistics[["proportion_reactive"]] = topSeedsStatistics$`_R` / (topSeedsStatistics$`_NR` + topSeedsStatistics$`_R`)
             
             topSeedsSummarised[["topSeedsSummarised"]][[taxa]][[traj]] = topSeedsStatistics
 

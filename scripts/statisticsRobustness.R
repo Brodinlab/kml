@@ -46,7 +46,7 @@ tile_seed_stats <- function(subjectAssignmentsDeconvoluted, taxa) {
             seedDeconvolutedCluster[["comparison"]] = paste(cluster, "v", "X", sep = "")
             seedDeconvolutedCluster[["fisher_pval"]] = fisher_test$p.value
             seedDeconvolutedCluster[["fisher_OR"]] = fisher_test$estimate
-            seedDeconvolutedCluster[["fraction_reactive"]] = seedDeconvolutedCluster$`_R` / seedDeconvolutedCluster$`_NR`
+            seedDeconvolutedCluster[["proportion_reactive"]] = seedDeconvolutedCluster$`_R` / (seedDeconvolutedCluster$`_NR` + seedDeconvolutedCluster$`_R`)
             
             seed_stats[[paste(taxa, "_seed_", seed_val, "_", cluster, "v", "X", sep = "")]] = seedDeconvolutedCluster
 
@@ -70,10 +70,10 @@ robustness_statistics <- function(kml_deconvoluted, metadata) {
 
     for (taxa in taxa_list) {
         
-	put(taxa)
+        put(taxa)
         taxa_deconvoluted = merge(kml_deconvoluted[[taxa]][["subjectAssignmentsDeconvoluted"]], metadata, by = "subject")
         robustness_statistics[["taxaSeedStats"]][[taxa]] = do.call(rbind, tile_seed_stats(taxa_deconvoluted, taxa))
-	put("tiling completed, now summarising")
+        put("tiling completed, now summarising")
         
         # for each trajectory, returns a dataframe with mean OR across all seeds
         avg = robustness_statistics[["taxaSeedStats"]][[taxa]] %>% 
@@ -93,17 +93,17 @@ robustness_statistics <- function(kml_deconvoluted, metadata) {
                         arrange(seed, fisher_OR) %>% 
                         distinct(.data[["seed"]], .keep_all = TRUE)
             
-	uniqueTrajectories = unique(avg[["trajectory"]]) # remembers the unique trajectories for this taxa
+        uniqueTrajectories = unique(avg[["trajectory"]]) # remembers the unique trajectories for this taxa
         
         ### completes a chisq test comparing max OR cluster distributions vs expected distribution (i.e. numberUniqueSeeds / numberUniqueClusters) which is random
         max_grouped = robustness_statistics[["taxaSeedsMax"]][[taxa]] %>% group_by(trajectory) %>% summarise(count = n()) %>% data.frame(check.names = FALSE)
-	max_grouped = max_grouped %>% complete(trajectory = uniqueTrajectories, fill = list("count" = 0)) # this code autocompletes the 2x2 matrix and adds missing trajectories with a count of 0
+        max_grouped = max_grouped %>% complete(trajectory = uniqueTrajectories, fill = list("count" = 0)) # this code autocompletes the 2x2 matrix and adds missing trajectories with a count of 0
         max_grouped$p.val = chisq.test(max_grouped$count)$p.val
         max_grouped$comparison = 'max'
         
         ### completes a chisq test comparing min OR cluster distributions vs expected distribution (i.e. numberUniqueSeeds / numberUniqueClusters) which is random
         min_grouped = robustness_statistics[["taxaSeedsMin"]][[taxa]] %>% group_by(trajectory) %>% summarise(count = n()) %>% data.frame(check.names = FALSE)
-	min_grouped = min_grouped %>% complete(trajectory = uniqueTrajectories, fill = list("count" = 0)) # this code autocompletes the 2x2 matrix and adds missing trajectories with a count of 0
+        min_grouped = min_grouped %>% complete(trajectory = uniqueTrajectories, fill = list("count" = 0)) # this code autocompletes the 2x2 matrix and adds missing trajectories with a count of 0
         min_grouped$p.val = chisq.test(min_grouped$count)$p.val
         min_grouped$comparison = 'min'
 

@@ -12,7 +12,7 @@ deconvolute_robustness <- function(kml_seeds, subset, transformation, level) {
     for (taxa in taxa_list) {
         
         put(taxa)
-	kml_deconvoluted[[taxa]] = list()
+        kml_deconvoluted[[taxa]] = list()
         cluster_column = paste(taxa, "_clusters", sep = "")
         
         meanTraj_allSeeds <- do.call(rbind, lapply(kml_seeds[[taxa]], function(x) {
@@ -57,8 +57,8 @@ deconvolute_robustness <- function(kml_seeds, subset, transformation, level) {
         kml_deconvoluted[[taxa]][["kmlDictionary"]] = meanTraj_allSeeds_wide_kml
         kml_deconvoluted[[taxa]][["subjectAssignmentsDeconvoluted"]] = subjectAssignments_deconvoluted
 
-	taxa_deconvoluted_rds_path = paste(kml_seeds[[taxa]][["subdir_path"]], taxa, "_deconvoluted.rds", sep="")
-	saveRDS(kml_deconvoluted[[taxa]], taxa_deconvoluted_rds_path)
+    taxa_deconvoluted_rds_path = paste(kml_seeds[[taxa]][["subdir_path"]], taxa, "_deconvoluted.rds", sep="")
+    saveRDS(kml_deconvoluted[[taxa]], taxa_deconvoluted_rds_path)
 
     }
     

@@ -5,8 +5,8 @@
 
 # Set options
 options(repos = c(CRAN = "https://cran.r-project.org/"),
-	rgl.useNULL = TRUE
-	)
+    rgl.useNULL = TRUE
+    )
 
 ######################
 # SET UP ENVIRONMENT # 
@@ -121,7 +121,7 @@ put("functions loaded successfully")
 # RUNNING ROBUSTNESS #
 ######################
 
-sep("running robustness")
+sep("running kml across seeds")
 
 input_rds = readRDS(input_arg)
 metadata = read.csv(metadata_arg, row.names = "X")
@@ -144,7 +144,7 @@ kmlSeeds = run_robustness(seed_range = c(1:100),
 kmlSeeds_path = paste(robustness_path, "kmlSeeds.rds", sep = "")
 saveRDS(kmlSeeds, kmlSeeds_path)
 
-put("robustness finished")
+put("kml finished")
 
 #########################
 # RUNNING DECONVOLUTION #
@@ -155,36 +155,36 @@ sep("running deconvolution")
 kmlSeedsDeconvoluted = deconvolute_robustness(kml_seeds=kmlSeeds, 
                                               subset=subset_arg, 
                                               transformation=transformation_arg,
-					      level=level_arg)
+                                              level=level_arg)
 
 kmlSeedsDeconvoluted_path = paste(robustness_path, "kmlSeedsDeconvoluted.rds", sep = "")
 saveRDS(kmlSeedsDeconvoluted, kmlSeedsDeconvoluted_path)
 
 put("deconvolution finished")
 
-##########################
-# SUMMARISING ROBUSTNESS #
-##########################
+###################################
+# RUNNING STATISTICS ON ALL SEEDS #
+###################################
 
-sep("summarising robustness")
+sep("running per seed statistics")
 
 kmlSeedStatistics = robustness_statistics(kml_deconvoluted=kmlSeedsDeconvoluted, 
-                                       metadata=metadata)
+                                          metadata=metadata)
 
 kmlSeedStatistics_path = paste(robustness_path, "kmlSeedStatistics.rds", sep = "")
 saveRDS(kmlSeedStatistics, kmlSeedStatistics_path)
 
-put("summarising finished")
+put("per seed statistics finished")
 
-#######################
-# PLOTTING ROBUSTNESS #
-#######################
+####################################
+# PLOTTING STATISTICS ON ALL SEEDS #
+####################################
 
-sep("plotting robustness and aggregating final data")
+sep("plotting per seed consistency statistics")
 
-put("generating data")
+put("generating data on trajectory consistency")
 taxaSeedsSummarised = plot_taxaSeedsSummarised(kmlSeedStatistics, plot = FALSE)
-put("generating volcano plot")
+put("plotting trajectory consistency")
 taxaSeedsSummarisedVolcano = plot_taxaSeedsSummarised(kmlSeedStatistics, plot = TRUE)
 
 taxaSeedsSummarisedData_path = paste(robustness_path, "taxaSeedsSummarised.csv", sep="")
@@ -195,6 +195,8 @@ write.csv(taxaSeedsSummarised, taxaSeedsSummarisedData_path)
 put("saving volcano")
 ggsave(taxaSeedsSummarisedPlot_path, taxaSeedsSummarisedVolcano, height = 15, width = 20)
 
+
+put("plotting trajectories deconvoluted")
 for (taxa in names(kmlSeeds)) {
 
     put(paste("plotting deconvoluted trajectories: ", taxa, sep=""))
@@ -204,6 +206,48 @@ for (taxa in names(kmlSeeds)) {
     trajectory_plot_paths = paste(plot_paths, taxa, ".pdf", sep="")
     ggsave(trajectory_plot_paths, a, height = 7, width = 24)
 }
+
+######################################
+# AGGREGATE TOP SEEDS PER TRAJECTORY #
+######################################
+
+topSeeds = summarise_top_seeds(kmlSeedStatistics=kmlSeedStatistics, 
+                               kmlSeedsDeconvoluted=kmlSeedsDeconvoluted, 
+                               metadata=metadata,
+                               threshold=0.6)
+
+topSeeds_path = paste(robustness_path, "topSeeds.rds", sep="")
+saveRDS(topSeeds, topSeeds_path)
+
+topSeedsSummarised = do.call(rbind, unlist(topSeeds[["topSeedsSummarised"]], recursive = FALSE)) %>% subset(trajectory != 'X')
+topSeedsSummarised_path = paste(robustness_path, "topSeeds.csv", sep="")
+write.csv(topSeedsSummarised, topSeedsSummarised_path)
+
+#############################
+# PLOT TOP SEEDS AGGREGATED #
+#############################
+
+topSeedsSummarised_volcano = plot_topSeedsSummarised(topSeedsSummarised)
+topSeedsSummarised_volcano_path = paste(robustness_path, "topSeedsSummarised_volcano.pdf", sep="")
+ggsave(topSeedsSummarised_volcano_path, topSeedsSummarised_volcanom, height = 8, width = 12)
+
+for (taxa in names(test_topSeeds[["topSeedsSummarised"]])) {
+    
+    for (traj in names(test_topSeeds[["topSeedsSummarised"]][[taxa]])) {
+        
+        put(paste("plotting final trajectories: ", taxa, " ", traj, sep=""))
+        
+        a = plot_subjectassignments_with_meanTraj(inputrds=atlas_class_clr_rds,
+                                                  topSeeds=test_topSeeds,
+                                                  kmlSeedsDeconvoluted=kmlSeedsDeconvoluted_atlas,
+                                                  taxa=taxa,
+                                                  traj=traj)
+        
+        finalTrajPlot_path = paste(plot_paths, taxa, "_", traj, ".pdf", sep="")
+        ggsave(finalTrajPlot_path, a, height = 8, width = 22)   
+    }
+}
+
 
 sep("RUN FINISHED CONGRATULATIONS")
 
