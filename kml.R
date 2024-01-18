@@ -109,11 +109,12 @@ put("kml parameters loaded")
 
 sep("loading functions")
 
-source("scripts/deconvoluteRobustness.R")
 source("scripts/generateKmlData.R")
-source("scripts/plotRobustness.R")
 source("scripts/runRobustness.R")
+source("scripts/deconvoluteRobustness.R")
+source("scripts/plotRobustness.R")
 source("scripts/statisticsRobustness.R")
+source("scripts/topSeedsRobustness.R")
 
 put("functions loaded successfully")
 
