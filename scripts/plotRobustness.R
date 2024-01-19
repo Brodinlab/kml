@@ -147,6 +147,8 @@ plot_topSeedsSummarised <- function(topSeedsSummarised) {
             axis.text.y = element_text(size = 14, face = "bold"),
             legend.position = "none") +
         xlab("log2(OR)") + ylab("-log10(pvalue)") + ggtitle("atopy in association to longitudinal microbial trajectories")
+    
+    return(a)
 }
 
 #######################################################################

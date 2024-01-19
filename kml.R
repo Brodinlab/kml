@@ -129,7 +129,7 @@ metadata = read.csv(metadata_arg, row.names = "X")
 rownames(metadata) = metadata[["subject"]]
 
 robustness_path = paste("output", "/", subset_arg, "/", transformation_arg, "/", level_arg, "/", sep = "")
-plot_path = paste("output", "/", subset_arg, "/", transformation_arg, "/", level_arg, "/plots", sep = "")
+plot_path = paste("output", "/", subset_arg, "/", transformation_arg, "/", level_arg, "/plots/", sep = "")
 check_dirs(robustness_path)
 check_dirs(plot_path)
 
