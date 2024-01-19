@@ -237,14 +237,14 @@ topSeedsSummarised_volcano = plot_topSeedsSummarised(topSeedsSummarised)
 topSeedsSummarised_volcano_path = paste(robustness_path, "topSeedsSummarised_volcano.pdf", sep="")
 ggsave(topSeedsSummarised_volcano_path, topSeedsSummarised_volcano, height = 8, width = 12)
 
-for (taxa in names(test_topSeeds[["topSeedsSummarised"]])) {
+for (taxa in names(topSeeds[["topSeedsSummarised"]])) {
     
-    for (traj in names(test_topSeeds[["topSeedsSummarised"]][[taxa]])) {
+    for (traj in names(topSeeds[["topSeedsSummarised"]][[taxa]])) {
         
         put(paste("plotting final trajectories: ", taxa, " ", traj, sep=""))
         
         a = plot_subjectassignments_with_meanTraj(inputrds=atlas_class_clr_rds,
-                                                  topSeeds=test_topSeeds,
+                                                  topSeeds=topSeeds,
                                                   kmlSeedsDeconvoluted=kmlSeedsDeconvoluted_atlas,
                                                   taxa=taxa,
                                                   traj=traj)
