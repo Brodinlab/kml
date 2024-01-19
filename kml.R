@@ -133,17 +133,17 @@ plot_path = paste("output", "/", subset_arg, "/", transformation_arg, "/", level
 check_dirs(robustness_path)
 check_dirs(plot_path)
 
-#kmlSeeds = run_robustness(seed_range = c(1:100), 
-#                          taxa_rds=input_rds,
-#                          nclusters=ncluster_arg,
-#                          parAlgorithm=kml_parameters[[algorithm_arg]],
-#                          robustnessdirname="output",
-#                          subset=subset_arg,
-#                          transformation=transformation_arg,
-#                          level=level_arg)
-#
+kmlSeeds = run_robustness(seed_range = c(1:100), 
+                          taxa_rds=input_rds,
+                          nclusters=ncluster_arg,
+                          parAlgorithm=kml_parameters[[algorithm_arg]],
+                          robustnessdirname="output",
+                          subset=subset_arg,
+                          transformation=transformation_arg,
+                          level=level_arg)
+
 kmlSeeds_path = paste(robustness_path, "kmlSeeds.rds", sep = "")
-#saveRDS(kmlSeeds, kmlSeeds_path)
+saveRDS(kmlSeeds, kmlSeeds_path)
 
 put("kml finished")
 
@@ -153,13 +153,13 @@ put("kml finished")
 
 sep("running deconvolution")
 
-#kmlSeedsDeconvoluted = deconvolute_robustness(kml_seeds=kmlSeeds, 
-#                                              subset=subset_arg, 
-#                                              transformation=transformation_arg,
-#                                              level=level_arg)
-#
+kmlSeedsDeconvoluted = deconvolute_robustness(kml_seeds=kmlSeeds, 
+                                              subset=subset_arg, 
+                                              transformation=transformation_arg,
+                                              level=level_arg)
+
 kmlSeedsDeconvoluted_path = paste(robustness_path, "kmlSeedsDeconvoluted.rds", sep = "")
-#saveRDS(kmlSeedsDeconvoluted, kmlSeedsDeconvoluted_path)
+saveRDS(kmlSeedsDeconvoluted, kmlSeedsDeconvoluted_path)
 
 put("deconvolution finished")
 
@@ -169,22 +169,17 @@ put("deconvolution finished")
 
 sep("running per seed statistics")
 
-#kmlSeedStatistics = robustness_statistics(kml_deconvoluted=kmlSeedsDeconvoluted, 
-#                                          metadata=metadata)
-#
+kmlSeedStatistics = robustness_statistics(kml_deconvoluted=kmlSeedsDeconvoluted, 
+                                          metadata=metadata)
+
 kmlSeedStatistics_path = paste(robustness_path, "kmlSeedStatistics.rds", sep = "")
-#saveRDS(kmlSeedStatistics, kmlSeedStatistics_path)
+saveRDS(kmlSeedStatistics, kmlSeedStatistics_path)
 
 put("per seed statistics finished")
 
 ####################################
 # PLOTTING STATISTICS ON ALL SEEDS #
 ####################################
-
-kmlSeeds = readRDS(kmlSeeds_path)
-kmlSeedsDeconvoluted = readRDS(kmlSeedsDeconvoluted_path)
-kmlSeedStatistics = readRDS(kmlSeedStatistics_path)
-
 
 sep("plotting per seed consistency statistics")
 
