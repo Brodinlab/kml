@@ -235,7 +235,7 @@ write.csv(topSeedsSummarised, topSeedsSummarised_path)
 
 topSeedsSummarised_volcano = plot_topSeedsSummarised(topSeedsSummarised)
 topSeedsSummarised_volcano_path = paste(robustness_path, "topSeedsSummarised_volcano.pdf", sep="")
-ggsave(topSeedsSummarised_volcano_path, topSeedsSummarised_volcanom, height = 8, width = 12)
+ggsave(topSeedsSummarised_volcano_path, topSeedsSummarised_volcano, height = 8, width = 12)
 
 for (taxa in names(test_topSeeds[["topSeedsSummarised"]])) {
     
