@@ -8,14 +8,14 @@ plot_taxaSeedsSummarised <- function(seed_stats, plot = TRUE) {
     
     taxaSeedsSummarised = do.call(rbind, seed_stats[["taxaSeedsSummarised"]]) %>% subset(filter == 'keep')
     taxaSeedsSummarised$taxa <- paste(sapply(strsplit(rownames(taxaSeedsSummarised), ".", fixed = TRUE), function(x) {unlist(x)[2]}), taxaSeedsSummarised$trajectory, sep = "_")
-    
+
     if (plot == TRUE) {
         
         a = ggplot() +
         geom_point(data=taxaSeedsSummarised, aes(x=log2(OR_mean), 
                                                  y= count / 100, 
                                                  fill = ifelse(OR_mean > 1, "higher risk of atopy", "lower risk of atopy"),
-                                                 size=(.data[["_NR"]] + .data[["_R"]])),
+                                                 size=(.data[["mean_NR"]] + .data[["mean_R"]])),
                    shape = 21, alpha=0.8) +
 
         geom_hline(yintercept = 1.3, linetype = 5, lwd = 1.1, alpha=0.7) + 
