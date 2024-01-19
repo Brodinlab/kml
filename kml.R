@@ -209,8 +209,8 @@ for (taxa in names(kmlSeeds)) {
 
     a = plotDeconvolutedMeanTraj(kmlSeedsDeconvoluted[[taxa]][["meltedMeanTraj"]], kmlSeedStatistics[["taxaSeedStats"]][[taxa]], taxa)
     
-    trajectory_plot_paths = paste(plot_paths, taxa, ".pdf", sep="")
-    ggsave(trajectory_plot_paths, a, height = 7, width = 24)
+    trajectory_plot_path = paste(plot_path, taxa, ".pdf", sep="")
+    ggsave(trajectory_plot_path, a, height = 7, width = 24)
 }
 
 ######################################
@@ -249,7 +249,7 @@ for (taxa in names(test_topSeeds[["topSeedsSummarised"]])) {
                                                   taxa=taxa,
                                                   traj=traj)
         
-        finalTrajPlot_path = paste(plot_paths, taxa, "_", traj, ".pdf", sep="")
+        finalTrajPlot_path = paste(plot_path, taxa, "_", traj, ".pdf", sep="")
         ggsave(finalTrajPlot_path, a, height = 8, width = 22)   
     }
 }
