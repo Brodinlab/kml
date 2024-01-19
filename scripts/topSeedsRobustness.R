@@ -26,6 +26,7 @@ robustness_top_seeds <- function(kmlSeedStatistics) {
                 subset(trajectory == traj & fisher_OR > 1) %>% # only keep seeds where OR > 1 because hypothesis is max
                 arrange(fisher_pval) %>% # arranges by pvalues (increasing)
                 head(20) # grab 20 best seeds
+            
             taxaTrajTopSeeds[[taxa]][[traj]] = taxaSeedStatistics[, c("trajectory", "seed", "fisher_OR", "fisher_pval")]
             
         }
@@ -83,7 +84,7 @@ summarise_top_seeds <- function(kmlSeedStatistics, kmlSeedsDeconvoluted, metadat
                 group_by(subject, .data[[cluster_column]]) %>% 
                 summarise(count = n()) %>% 
                 mutate(prop = count / sum(count)) %>% 
-                subset(prop >= threshold)
+                subset(prop > threshold)
             
             topSeedsSummarised[["topSubjectAssginments"]][[taxa]][[traj]] = merge(subjectAssignmentsTopSeedsRobustness, metadata, by = "subject")
             
