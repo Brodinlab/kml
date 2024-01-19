@@ -16,3 +16,7 @@ log/*
 # ignore random files created during execution
 trash
 dfCLD*
+
+# ignore ipynb related metadata
+*.ipynb*
+
