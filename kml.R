@@ -243,9 +243,9 @@ for (taxa in names(topSeeds[["topSeedsSummarised"]])) {
         
         put(paste("plotting final trajectories: ", taxa, " ", traj, sep=""))
         
-        a = plot_subjectassignments_with_meanTraj(inputrds=atlas_class_clr_rds,
+        a = plot_subjectassignments_with_meanTraj(inputrds=input_rds,
                                                   topSeeds=topSeeds,
-                                                  kmlSeedsDeconvoluted=kmlSeedsDeconvoluted_atlas,
+                                                  kmlSeedsDeconvoluted=kmlSeedsDeconvoluted,
                                                   taxa=taxa,
                                                   traj=traj)
         
