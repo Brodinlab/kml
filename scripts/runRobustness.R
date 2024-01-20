@@ -31,27 +31,39 @@ run_robustness <- function(seed_range = c(1:2), taxa_rds, nclusters, parAlgorith
         kml_seeds[[taxa]][["subdir_path"]] = subdir_path
     
         for (seed_val in seed_range) {
-            set.seed(seed_val)
-        
-            if (subsetting == TRUE) {
-                
-                taxa_wide_subset = slice_sample(taxa_rds[[taxa]], prop = 0.9)
-                
-            } else {taxa_wide_subset = taxa_rds[[taxa]]}
-            
-            
-            taxa_kml = run_kml(taxa_wide_subset, nclusters, 1, parAlgorithm, taxa, subset, transformation)
-            taxa_kml$subjectAssignment[["seed"]] = seed_val
-            taxa_kml$taxaMeanTraj[["seed"]] = seed_val
-            
-            kml_seeds[[taxa]][[paste("seed: ", seed_val, sep = "")]] = taxa_kml
+            # skip if file already exists
             
             taxa_kml_path = paste(subdir_path, "/", taxa, "_", seed_val, ".rds", sep = "")
-            saveRDS(taxa_kml, taxa_kml_path)
-    
             
+            if (file.exists(taxa_kml_path)) {
+                
+                log_msg = paste("skipping " taxa, " seed ", seed_val, " file already exists", sep = "")
+                put(log_msg)
+                taxa_kml = readRDS(taxa_kml_path)
+                kml_seeds[[taxa]][[paste("seed: ", seed_val, sep = "")]] = taxa_kml
+                
+            } else {
+                # execute kml
+                
+                set.seed(seed_val)
+        
+                if (subsetting == TRUE) {
+                
+                    taxa_wide_subset = slice_sample(taxa_rds[[taxa]], prop = 0.9)
+                
+                } else {taxa_wide_subset = taxa_rds[[taxa]]}
+            
+            
+                taxa_kml = run_kml(taxa_wide_subset, nclusters, 1, parAlgorithm, taxa, subset, transformation)
+                taxa_kml$subjectAssignment[["seed"]] = seed_val
+                taxa_kml$taxaMeanTraj[["seed"]] = seed_val
+            
+                kml_seeds[[taxa]][[paste("seed: ", seed_val, sep = "")]] = taxa_kml
+            
+                taxa_kml_path = paste(subdir_path, "/", taxa, "_", seed_val, ".rds", sep = "")
+                saveRDS(taxa_kml, taxa_kml_path)
+            }       
         }
-    }
-    
+    }    
     return(kml_seeds)
 }
