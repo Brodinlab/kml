@@ -37,7 +37,7 @@ run_robustness <- function(seed_range = c(1:2), taxa_rds, nclusters, parAlgorith
             
             if (file.exists(taxa_kml_path)) {
                 
-                log_msg = paste("skipping " taxa, " seed ", seed_val, " file already exists", sep = "")
+                log_msg = paste("skipping ", taxa, " seed ", seed_val, " file already exists", sep = "")
                 put(log_msg)
                 taxa_kml = readRDS(taxa_kml_path)
                 kml_seeds[[taxa]][[paste("seed: ", seed_val, sep = "")]] = taxa_kml
