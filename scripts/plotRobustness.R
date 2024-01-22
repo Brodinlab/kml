@@ -231,7 +231,7 @@ plot_subjectassignments_with_meanTraj <- function(inputrds, topSeeds, kmlSeedsDe
                         aes(x = .data[["variable_numeric"]], 
                             y= .data[["mean_value"]], 
                             label = paste(paste("OR ", traj, "vX: " , round(.data[["OR"]], digits = 3), sep = ""), 
-                                          paste("pval ", traj, "vX: " round(.data[["fisher_pval"]], digits = 6), sep = ""),
+                                          paste("pval ", traj, "vX: ", round(.data[["fisher_pval"]], digits = 6), sep = ""),
                                           sep = "\n")),
                         vjust = 0, 
                         size = 6,
