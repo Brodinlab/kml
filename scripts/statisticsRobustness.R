@@ -37,6 +37,7 @@ tile_seed_stats <- function(subjectAssignmentsDeconvoluted, taxa) {
             seedDeconvolutedCluster = seedDeconvolutedCluster[, c(cluster_column, "_NR", "_R")]
             rownames(seedDeconvolutedCluster) = seedDeconvolutedCluster[[cluster_column]]
             seedDeconvolutedCluster[[cluster_column]] <- NULL
+            seedDeconvolutedCluster = seedDeconvolutedCluster + 1 # add 1 to prevent inf
             
             fisher_test = fisher.test(seedDeconvolutedCluster)
             
