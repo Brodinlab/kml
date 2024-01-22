@@ -239,9 +239,9 @@ plot_subjectassignments_with_meanTraj <- function(inputrds, topSeeds, kmlSeedsDe
     
         scale_color_gradient2(
           name="proportion atopic",
-          low = microshades_palettes$micro_green[4], 
+          low = '#41ab5d', 
           mid = "white", # This color is at the midpoint, which is 1.5 in this case.
-          high = microshades_palettes$micro_orange[4], 
+          high = '#fe9929', 
           midpoint = 0.5, limits = c(0, 1), na.value = "red",
           space = "Lab",
           guide = "colourbar"
