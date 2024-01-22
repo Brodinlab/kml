@@ -155,6 +155,20 @@ plot_topSeedsSummarised <- function(topSeedsSummarised) {
 # Setting ROBUSTNESS PLOTTING FOR FINAL SUBJECT ASSIGNMENTS FUNCTIONS #
 #######################################################################
 
+retrieve_proportion_reactive <- function(topsubjectAssignmentTaxaTraj, taxa) {
+    
+    cluster_column = paste(taxa, "clusters", sep = "_")
+    
+    topsubjectAssignmentTaxaTraj_wide = topsubjectAssignmentTaxaTraj %>% 
+        group_by(deconvoluted_trajectory, reactivity) %>% 
+        tally %>% 
+        pivot_wider(names_from = reactivity, values_from = n) %>%
+        rename(!!cluster_column := deconvoluted_trajectory)
+
+    topsubjectAssignmentTaxaTraj_wide[["deconvoluted_proportion_reactive"]] = topsubjectAssignmentTaxaTraj_wide$`_R` / (topsubjectAssignmentTaxaTraj_wide$`_NR` + topsubjectAssignmentTaxaTraj_wide$`_R`)
+
+    return(topsubjectAssignmentTaxaTraj_wide)
+}
 
 process_subjects <- function(inputrds, topSeeds, taxa, traj) {
     
@@ -170,6 +184,7 @@ process_subjects <- function(inputrds, topSeeds, taxa, traj) {
     return(abundance_grouped)   
 }
 
+
 process_meanTraj <- function(topSeeds, kmlSeedsDeconvoluted, taxa, traj) {
     
     cluster_column = paste(taxa, "clusters", sep = "_")
@@ -184,18 +199,22 @@ process_meanTraj <- function(topSeeds, kmlSeedsDeconvoluted, taxa, traj) {
     
     meanTrajTopSeeds[["trajectory"]] <- ifelse(meanTrajTopSeeds[[cluster_column]] == traj, traj, "X")
     meanTrajTopSeeds_OR = merge(meanTrajTopSeeds, topSeeds[["topSeedsSummarised"]][[taxa]][[traj]], by = c("trajectory"))
+    
+    deconvoluted_reactive_prop = retrieve_proportion_reactive(topSeeds[["topSubjectAssginments"]][[taxa]][[traj]], taxa)
+    
+    meanTrajTopSeeds_OR_reactive_prop = merge(meanTrajTopSeeds_OR, deconvoluted_reactive_prop, by = cluster_column, all.x = TRUE)
 
-    return(meanTrajTopSeeds_OR)
+    return(meanTrajTopSeeds_OR_reactive_prop)
     
 }
+
 
 plot_subjectassignments_with_meanTraj <- function(inputrds, topSeeds, kmlSeedsDeconvoluted, taxa, traj) {
     
     subjectTrajectories = process_subjects(inputrds, topSeeds, taxa, traj)
     meanTrajTopSeeds = process_meanTraj(topSeeds, kmlSeedsDeconvoluted, taxa, traj)
+    
     meanTrajTopSeeds[["OR"]] <- ifelse(meanTrajTopSeeds[["trajectory"]] == 'X', meanTrajTopSeeds[["fisher_OR_reciprocal"]], meanTrajTopSeeds[["fisher_OR"]])
-    meanTrajTopSeeds[["OR_capped"]] <- ifelse(meanTrajTopSeeds[["OR"]] >= 4, 4, 
-                                             ifelse(meanTrajTopSeeds[["OR"]] <= 0.25, 0.25, meanTrajTopSeeds[["OR"]]))
     
     cluster_column = paste(taxa, "clusters", sep = "_")
     
@@ -205,25 +224,25 @@ plot_subjectassignments_with_meanTraj <- function(inputrds, topSeeds, kmlSeedsDe
 #        geom_point(data=subjectTrajectories, aes(x=.data[["variable_numeric"]], y=.data[["value"]]), alpha = 0.2) + 
         geom_line(data=subjectTrajectories, aes(x=.data[["variable_numeric"]], y=.data[["value"]], group=subject), lwd=1.1, alpha=0.2) +
     
-        geom_line(data=meanTrajTopSeeds, aes(x=.data[["variable_numeric"]], y=.data[["mean_value"]], col = log2(.data[["OR_capped"]]), group = .data[[cluster_column]]), lwd = 4.5, alpha = 0.8) +
-        geom_line(data=meanTrajTopSeeds, aes(x=.data[["variable_numeric"]], y=.data[["mean_value"]], col = log2(.data[["OR_capped"]]), group = .data[[cluster_column]]), lwd = 7, alpha = 0.5) +
+        geom_line(data=meanTrajTopSeeds, aes(x=.data[["variable_numeric"]], y=.data[["mean_value"]], col = .data[["deconvoluted_proportion_reactive"]], group = .data[[cluster_column]]), lwd = 4.5, alpha = 0.8) +
+        geom_line(data=meanTrajTopSeeds, aes(x=.data[["variable_numeric"]], y=.data[["mean_value"]], col = .data[["deconvoluted_proportion_reactive"]], group = .data[[cluster_column]]), lwd = 7, alpha = 0.5) +
     
         geom_label_repel(data = meanTrajTopSeeds_labels, 
                         aes(x = .data[["variable_numeric"]], 
                             y= .data[["mean_value"]], 
-                            label = paste(paste("OR: ", round(.data[["OR"]], digits = 3), sep = ""), 
-                                          paste("pval: ", round(.data[["fisher_pval"]], digits = 6), sep = ""),
+                            label = paste(paste("OR ", traj, "vX: " , round(.data[["OR"]], digits = 3), sep = ""), 
+                                          paste("pval ", traj, "vX: " round(.data[["fisher_pval"]], digits = 6), sep = ""),
                                           sep = "\n")),
                         vjust = 0, 
                         size = 6,
                         box.padding = 0.5) +
     
         scale_color_gradient2(
-          name="log2(ODDS RATIO) \nCAPPED AT -2 & 2",
-          low = "#41ab5d", 
+          name="proportion atopic",
+          low = microshades_palettes$micro_green[4], 
           mid = "white", # This color is at the midpoint, which is 1.5 in this case.
-          high = "#fe9929", 
-          midpoint = 0, limits = c(-2, 2), na.value = "red",
+          high = microshades_palettes$micro_orange[4], 
+          midpoint = 0.5, limits = c(0, 1), na.value = "red",
           space = "Lab",
           guide = "colourbar"
         ) +
