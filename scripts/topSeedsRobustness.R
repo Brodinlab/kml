@@ -48,7 +48,7 @@ robustness_top_seeds <- function(kmlSeedStatistics) {
     return(taxaTrajTopSeeds)
 }
 
-summarise_top_seeds <- function(kmlSeedStatistics, kmlSeedsDeconvoluted, metadata, threshold=0.6) {
+summarise_top_seeds <- function(kmlSeedStatistics, kmlSeedsDeconvoluted, metadata, threshold=0.5) {
     # give threshold like a fraction e.g. .75%. needs to be > 0.5 at least.
     # higher threshold does not necessarily produce better results because individuals who are split between two very similar trajectories are filtered away completely
     # In some comparisons it doesn't matter to which of these they belong to e.g. bacteroidia in relab data. 

@@ -215,7 +215,7 @@ for (taxa in names(kmlSeeds)) {
 topSeeds = summarise_top_seeds(kmlSeedStatistics=kmlSeedStatistics, 
                                kmlSeedsDeconvoluted=kmlSeedsDeconvoluted, 
                                metadata=metadata,
-                               threshold=0.6)
+                               threshold=0.5)
 
 topSeeds_path = paste(robustness_path, "topSeeds.rds", sep="")
 saveRDS(topSeeds, topSeeds_path)
