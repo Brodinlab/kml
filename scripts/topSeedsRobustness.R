@@ -25,7 +25,7 @@ robustness_top_seeds <- function(kmlSeedStatistics) {
             taxaSeedStatistics = kmlSeedStatistics[["taxaSeedStats"]][[taxa]] %>% 
                 subset(trajectory == traj & fisher_OR > 1) %>% # only keep seeds where OR > 1 because hypothesis is max
                 arrange(fisher_pval) %>% # arranges by pvalues (increasing)
-                head(20) # grab 20 best seeds
+                head(40) # grab 20 best seeds
             
             taxaTrajTopSeeds[[taxa]][[traj]] = taxaSeedStatistics[, c("trajectory", "seed", "fisher_OR", "fisher_pval")]
             
@@ -37,7 +37,7 @@ robustness_top_seeds <- function(kmlSeedStatistics) {
             taxaSeedStatistics = kmlSeedStatistics[["taxaSeedStats"]][[taxa]] %>% 
                 subset(trajectory == traj & fisher_OR < 1) %>% # only keep seeds where OR < 1 because hypothesis is min
                 arrange(fisher_pval) %>% 
-                head(20) # grab 20 best seeds
+                head(40) # grab 20 best seeds
             
             taxaTrajTopSeeds[[taxa]][[traj]] = taxaSeedStatistics[, c("trajectory", "seed", "fisher_OR", "fisher_pval")]
             
@@ -79,6 +79,7 @@ summarise_top_seeds <- function(kmlSeedStatistics, kmlSeedsDeconvoluted, metadat
             subjectAssignments[["seed"]] = paste("seed:", gsub("*._", "", subjectAssignments[["trajSeedIdentifier"]]))
             
             subjectAssignmentsTopSeeds = subjectAssignments %>% subset(seed %in% topSeeds)
+            subjectAssignmentsTopSeeds[["deconvoluted_cluster"]] = subjectAssignmentsTopSeeds[[cluster_column]]
             subjectAssignmentsTopSeeds[[cluster_column]] <- ifelse(subjectAssignmentsTopSeeds[[cluster_column]] == traj, traj, "X")
             subjectAssignmentsTopSeedsRobustness = subjectAssignmentsTopSeeds %>% 
                 group_by(subject, .data[[cluster_column]]) %>% 
