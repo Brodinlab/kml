@@ -20,6 +20,10 @@ tile_seed_stats <- function(subjectAssignmentsDeconvoluted, taxa) {
             group_by(.data[[cluster_column]], reactivity) %>% summarise(count = n()) %>% 
             pivot_wider(names_from = reactivity, values_from = count) %>% data.frame(check.names = FALSE)
         
+        if (nrow(seedDeconvoluted) == 1) {
+            put(paste("all subjects belong to same trajectory for seed: ", seed_val, ", skipping ...", sep=""))
+            next  # Skip to the next iteration of the loop
+        }
         
         clusters = unique(seedDeconvoluted[[cluster_column]])
         
