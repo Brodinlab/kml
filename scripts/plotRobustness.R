@@ -69,6 +69,7 @@ plotDeconvolutedMeanTraj <- function(kml_deconvoluted_taxa_melted, kmlSeedStatis
     
     if (dim(meanTraj)[1] != dim(kmlMeanTraj_metadata)[1]) {
         put(paste(taxa, ": DIMENSIONS DONT ADD UPP AFTER MERGING"))
+        put(paste("only ", length(unique(kmlMeanTraj_metadata$seed)), " seeds passed", sep = ""))
     }
     
     kml_plot_theme = theme_minimal() + 
