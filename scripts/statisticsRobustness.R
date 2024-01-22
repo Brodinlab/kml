@@ -18,7 +18,7 @@ tile_seed_stats <- function(subjectAssignmentsDeconvoluted, taxa) {
         seedDeconvoluted = subjectAssignmentsDeconvoluted %>% 
             subset(seed == seed_val & reactivity != "_nodata") %>% 
             group_by(.data[[cluster_column]], reactivity) %>% summarise(count = n()) %>% 
-            pivot_wider(names_from = reactivity, values_from = count) %>% data.frame(check.names = FALSE)
+            pivot_wider(names_from = reactivity, values_from = count, values_fill = 0) %>% data.frame(check.names = FALSE)
         
         if (nrow(seedDeconvoluted) == 1) {
             put(paste("all subjects belong to same trajectory for seed: ", seed_val, ", skipping ...", sep=""))

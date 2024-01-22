@@ -162,7 +162,7 @@ retrieve_proportion_reactive <- function(topsubjectAssignmentTaxaTraj, taxa) {
     topsubjectAssignmentTaxaTraj_wide = topsubjectAssignmentTaxaTraj %>% 
         group_by(deconvoluted_trajectory, reactivity) %>% 
         tally %>% 
-        pivot_wider(names_from = reactivity, values_from = n) %>%
+        pivot_wider(names_from = reactivity, values_from = n, values_fill = 0) %>%
         rename(!!cluster_column := deconvoluted_trajectory)
 
     topsubjectAssignmentTaxaTraj_wide[["deconvoluted_proportion_reactive"]] = topsubjectAssignmentTaxaTraj_wide$`_R` / (topsubjectAssignmentTaxaTraj_wide$`_NR` + topsubjectAssignmentTaxaTraj_wide$`_R`)
