@@ -207,7 +207,7 @@ for (taxa in names(kmlSeeds)) {
 
     put(paste("plotting deconvoluted trajectories: ", taxa, sep=""))
 
-    a = plotDeconvolutedMeanTraj(kmlSeedsDeconvoluted[[taxa]][["meltedMeanTraj"]], kmlSeedStatistics[["taxaSeedStats"]][[taxa]], taxa)
+    a = plotDeconvolutedMeanTraj_logreg(kmlSeedsDeconvoluted[[taxa]][["meltedMeanTraj"]], kmlSeedStatistics[["taxaSeedStats"]][[taxa]], taxa)
     
     deconvoluted_plot_path = paste(plot_path, taxa, "_deconvoluted.pdf", sep="")
     ggsave(deconvoluted_plot_path, a, height = 7, width = 24)
