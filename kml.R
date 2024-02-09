@@ -171,8 +171,9 @@ put("deconvolution finished")
 
 sep("running per seed statistics")
 
-kmlSeedStatistics = seed_statistics_logreg(kml_deconvoluted=kmlSeedsDeconvoluted, 
+kmlSeedStatistics = seed_statistics_logreg(kmlSeedsDeconvoluted=kmlSeedsDeconvoluted, 
                                           metadata=metadata)
+
 
 kmlSeedStatistics_path = paste(robustness_path, "kmlSeedStatistics.rds", sep = "")
 saveRDS(kmlSeedStatistics, kmlSeedStatistics_path)
