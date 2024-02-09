@@ -24,28 +24,32 @@ tile_seed_stats_logreg <- function(subjectAssignmentsDeconvoluted, taxa) {
         
         clusters = unique(seedDeconvoluted[[cluster_column]])
         
-        if (length(clusters) == 1) {next}
+        if (length(clusters) == 1) {
+            put(paste("SKIPPING SEED: ", seed_val, " only one trajectory"), sep = "")
+            next
+            
+        } else {
         
-        
-        for (cluster in clusters) {
+            for (cluster in clusters) {
+                
+                nSubjects = subsetseedDeconvoluted %>% group_by(.data[[cluster_column]]) %>% filter(.data[[cluster_column]] == cluster) %>% dim()                                       
+                cluster_comparison = paste(cluster, "vX", sep = "")
+                seedDeconvoluted[[cluster_comparison]] <- ifelse(seedDeconvoluted[[cluster_column]] == cluster, cluster, "X")
+                seedDeconvoluted[[cluster_comparison]] = factor(seedDeconvoluted[[cluster_comparison]], c("X", cluster))
+                
+                formula_ = paste("reactivity_coded ~ ", cluster_comparison, sep = "")
+                seed_logmodel <- glm(formula_, family=binomial(link='logit'), data=seedDeconvoluted)
+                seed_logmodel_data = plot_model(seed_logmodel)$data
+                seed_logmodel_data[["term"]] = paste(taxa, seed_logmodel_data[["term"]], sep = "_")
+                seed_logmodel_data[["seed"]] = seed_val
+                seed_logmodel_data[["taxa"]] = taxa
+                seed_logmodel_data[["cluster"]] = cluster
+                seed_logmodel_data[["nSubjects"]] = nSubjects[1]
+                
+                
+                seed_stats[[paste(taxa, cluster, seed_val, sep = "_")]] = seed_logmodel_data
             
-            nSubjects = subsetseedDeconvoluted %>% group_by(.data[[cluster_column]]) %>% filter(.data[[cluster_column]] == cluster) %>% dim()                                       
-            cluster_comparison = paste(cluster, "vX", sep = "")
-            seedDeconvoluted[[cluster_comparison]] <- ifelse(seedDeconvoluted[[cluster_column]] == cluster, cluster, "X")
-            seedDeconvoluted[[cluster_comparison]] = factor(seedDeconvoluted[[cluster_comparison]], c("X", cluster))
-            
-            formula_ = paste("reactivity_coded ~ ", cluster_comparison, sep = "")
-            seed_logmodel <- glm(formula_, family=binomial(link='logit'), data=seedDeconvoluted)
-            seed_logmodel_data = plot_model(seed_logmodel)$data
-            seed_logmodel_data[["term"]] = paste(taxa, seed_logmodel_data[["term"]], sep = "_")
-            seed_logmodel_data[["seed"]] = seed_val
-            seed_logmodel_data[["taxa"]] = taxa
-            seed_logmodel_data[["cluster"]] = cluster
-            seed_logmodel_data[["nSubjects"]] = nSubjects[1]
-            
-            
-            seed_stats[[paste(taxa, cluster, seed_val, sep = "_")]] = seed_logmodel_data
-            
+            }
             
         }
     }
