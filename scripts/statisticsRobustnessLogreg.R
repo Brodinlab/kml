@@ -27,8 +27,6 @@ tile_seed_stats_logreg <- function(subjectAssignmentsDeconvoluted, taxa) {
         
         for (cluster in clusters) {
             
-            print(cluster)
-            
             cluster_comparison = paste(cluster, "vX", sep = "")
             seedDeconvoluted[[cluster_comparison]] <- ifelse(seedDeconvoluted[[cluster_column]] == cluster, cluster, "X")
             seedDeconvoluted[[cluster_comparison]] = factor(seedDeconvoluted[[cluster_comparison]], c("X", cluster))
@@ -78,8 +76,6 @@ subject_assignments_logreg <- function(subjectAssignmentsTaxa, metadata, taxa) {
     
     for (cluster in clusters) {
         
-        print(cluster)
-        
         cluster_comparison = paste(cluster, "vX", sep = "")
         subjectAssignmentsTaxa[[cluster_comparison]] <- ifelse(subjectAssignmentsTaxa[[cluster_column]] == cluster, cluster, "X")
         subjectAssignmentsTaxa[[cluster_comparison]] = factor(subjectAssignmentsTaxa[[cluster_comparison]], c("X", cluster))
@@ -107,8 +103,6 @@ seed_statistics_logreg <- function(kmlSeedsDeconvoluted, metadata) {
     
     robustness_statistics = list()
     robustness_statistics[["taxaSeedStats"]] = list()
-#    robustness_statistics[["taxaSeedsMax"]] = list()
-#    robustness_statistics[["taxaSeedsMin"]] = list()
     robustness_statistics[["taxaSeedsSummarised"]] = list()
     
     for (taxa in taxa_list) {

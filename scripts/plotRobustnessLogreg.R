@@ -67,7 +67,7 @@ plot_TaxaSeedsSummed <- function(taxaSeedsSummed) {
         axis.line = element_line(colour = "black"), 
         axis.text.x = element_text(size = 14, face = "bold"), 
         axis.text.y = element_text(size = 14, face = "bold"),
-        legend.position = "top") + labs(y = "-log10(pval)", x = "log2 OR (from logreg)", title = paste(taxa, sep = ""))
+        legend.position = "top") + labs(y = "-log10(pval)", x = "log2 OR (from logreg)", title = "final taxa scoring")
     
     return(a)
     
