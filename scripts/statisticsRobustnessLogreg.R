@@ -24,9 +24,12 @@ tile_seed_stats_logreg <- function(subjectAssignmentsDeconvoluted, taxa) {
         
         clusters = unique(seedDeconvoluted[[cluster_column]])
         
+        if (length(clusters) == 1) {next}
+        
         
         for (cluster in clusters) {
             
+            nSubjects = subsetseedDeconvoluted %>% group_by(.data[[cluster_column]]) %>% filter(.data[[cluster_column]] == cluster) %>% dim()                                       
             cluster_comparison = paste(cluster, "vX", sep = "")
             seedDeconvoluted[[cluster_comparison]] <- ifelse(seedDeconvoluted[[cluster_column]] == cluster, cluster, "X")
             seedDeconvoluted[[cluster_comparison]] = factor(seedDeconvoluted[[cluster_comparison]], c("X", cluster))
@@ -37,6 +40,8 @@ tile_seed_stats_logreg <- function(subjectAssignmentsDeconvoluted, taxa) {
             seed_logmodel_data[["term"]] = paste(taxa, seed_logmodel_data[["term"]], sep = "_")
             seed_logmodel_data[["seed"]] = seed_val
             seed_logmodel_data[["taxa"]] = taxa
+            seed_logmodel_data[["cluster"]] = cluster
+            seed_logmodel_data[["nSubjects"]] = nSubjects[1]
             
             
             seed_stats[[paste(taxa, cluster, seed_val, sep = "_")]] = seed_logmodel_data
@@ -76,6 +81,7 @@ subject_assignments_logreg <- function(subjectAssignmentsTaxa, metadata, taxa) {
     
     for (cluster in clusters) {
         
+        nSubjects = subjectAssignmentsTaxa %>% group_by(.data[[cluster_column]]) %>% filter(.data[[cluster_column]] == cluster) %>% dim()                                       
         cluster_comparison = paste(cluster, "vX", sep = "")
         subjectAssignmentsTaxa[[cluster_comparison]] <- ifelse(subjectAssignmentsTaxa[[cluster_column]] == cluster, cluster, "X")
         subjectAssignmentsTaxa[[cluster_comparison]] = factor(subjectAssignmentsTaxa[[cluster_comparison]], c("X", cluster))
@@ -85,6 +91,8 @@ subject_assignments_logreg <- function(subjectAssignmentsTaxa, metadata, taxa) {
         taxa_logmodel_data = plot_model(taxa_logmodel)$data
         taxa_logmodel_data[["term"]] = paste(taxa, taxa_logmodel_data[["term"]], sep = "_")
         taxa_logmodel_data[["taxa"]] = taxa
+        taxa_logmodel_data[["cluster"]] = cluster
+        taxa_logmodel_data[["nSubjects"]] = nSubjects[1]
         
         
         taxa_stats[[paste(taxa, cluster, sep = "_")]] = taxa_logmodel_data

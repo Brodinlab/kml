@@ -11,8 +11,8 @@ plot_TaxaSeedStats <- function(taxaSeedStats, taxa) {
     a <- ggplot() +
     geom_point(data=taxaSeedStats, aes(x=log2(estimate), 
                                              y= -log10(p.value), 
-                                             fill = term),
-    #                                         size=(.data[["mean_NR"]] + .data[["mean_R"]])),
+                                             fill = term,
+                                             size=nSubjects),
                shape = 21, size = 7, alpha=0.8) +
     geom_hline(yintercept = 1.3, linetype = 5, lwd = 1.1, alpha=0.7) + 
     
@@ -46,9 +46,9 @@ plot_TaxaSeedsSummed <- function(taxaSeedsSummed) {
     
     a <- ggplot() +
     geom_point(data=taxaSeedsSummed_toplot, aes(x=log2(estimate), 
-                                             y= -log10(p.value)), 
+                                             y= -log10(p.value), 
 #                                             fill = term),
-    #                                         size=(.data[["mean_NR"]] + .data[["mean_R"]])),
+                                            size=nSubjects),
                shape = 21, size = 7, alpha=0.8) +
     geom_hline(yintercept = 1.3, linetype = 5, lwd = 1.1, alpha=0.7) + 
     
