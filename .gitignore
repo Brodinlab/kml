@@ -5,7 +5,7 @@ env/*
 !env/kml.env
 
 # ignore all output
-output/*
+output*/*
 
 # ignore all input
 input/*
