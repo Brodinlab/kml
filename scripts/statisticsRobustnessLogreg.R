@@ -32,7 +32,7 @@ tile_seed_stats_logreg <- function(subjectAssignmentsDeconvoluted, taxa) {
         
             for (cluster in clusters) {
                 
-                nSubjects = subsetseedDeconvoluted %>% group_by(.data[[cluster_column]]) %>% filter(.data[[cluster_column]] == cluster) %>% dim()                                       
+                nSubjects = seedDeconvoluted %>% group_by(.data[[cluster_column]]) %>% filter(.data[[cluster_column]] == cluster) %>% dim()                                       
                 cluster_comparison = paste(cluster, "vX", sep = "")
                 seedDeconvoluted[[cluster_comparison]] <- ifelse(seedDeconvoluted[[cluster_column]] == cluster, cluster, "X")
                 seedDeconvoluted[[cluster_comparison]] = factor(seedDeconvoluted[[cluster_comparison]], c("X", cluster))
