@@ -140,6 +140,7 @@ for (level in c("species", "genus", "family", "order", "class")) {
         
             adonis2_model = adonis2(adonis2_input[[level]] ~ taxa_var, data = adonis2_taxa_md, permutations = 999, method = "euclidean", by = "terms", strata = adonis2_taxa_md$subject)
             adonis2_model[["taxa"]] = taxa
+            adonis2_model[["level"]] = level
             adonis2_model[["terms"]] = rownames(adonis2_model)
             adonis2_output[[level]][[taxa]] = adonis2_model
         
